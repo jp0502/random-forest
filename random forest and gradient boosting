@@ -1,0 +1,63 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
+import random
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+
+
+df = pd.read_excel("data.xlsx")
+
+sizes = df['Lab Status'].value_counts(sort=1)
+
+sizes
+
+df.drop(['GlobalID'], axis = 1, inplace = True) #drops GlobalID
+
+df.drop(['Notes'], axis =1, inplace = True) #drops Notes
+
+df.drop(['Lab Comments'], axis = 1, inplace = True) #drops Lab Comments 
+
+df = df.dropna() #drops all columns/rows that have missing values
+
+df = df.rename(columns={'Lab Status': 'Lab_Status','Detection Date': 'Detection_Date', 'Submission Date' : 'Submission_Date'})
+#renames columns with underscores
+
+df
+
+df.Lab_Status[df.Lab_Status == 'Positive ID'] = 1  #set Positive Id = 1
+
+df.Lab_Status[df.Lab_Status == 'Negative ID'] = 2 #set Negative Id = 2
+
+df.Lab_Status[df.Lab_Status == 'Unverified'] = 3 #set Unverified = 3
+
+df.Lab_Status[df.Lab_Status == 'Unprocessed'] = 4 #set Unprocessed = 4
+
+sizes
+
+Y = df['Lab_Status'].values #set dependent Variable Y
+Y = Y.astype('int')
+
+df
+
+X = df.drop(labels = ['Lab_Status'], axis = 1) #set indepdent variables X
+
+Y
+
+# we will divide our data set 70% as training and 30% as testing to validate our data. 
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state = 30)
+#choose 30 random entries as seed to start our training set
+
+print(X_train) #produces 70% of our entries
+
+from sklearn.ensemble import RandomForestClassifier #Produces an integer (1 or 2) as result (1 = positive, 2 = negative)
+
+model = RandomForestClassifier(n_estimators = 10, random_state = 30)
+
+model.fit(X_train, Y_train)
+
+df.head(10)
+
